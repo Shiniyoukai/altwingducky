@@ -16,4 +16,5 @@ it also only uses combinations that will not be affected by NUMLOCK status i.e. 
 Usefull in combination with patched version of jackit
 
 Original: https://github.com/insecurityofthings/jackit
+
 Patched: https://github.com/Shiniyoukai/jackit/tree/patch-2
