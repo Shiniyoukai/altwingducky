@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# Script that converts letters to alt codes 
+
+from __future__ import print_function, absolute_import
+import click
+
+
+# some console colours
+W = '\033[0m'  # white (normal)
+R = '\033[31m' # red
+G = '\033[32m' # green
+O = '\033[33m' # orange
+B = '\033[34m' # blue
+P = '\033[35m' # purple 
+C = '\033[36m' # cyan
+GR = '\033[37m' # gray
+
+def generate_alt_keycodes():
+    def find_alt_keycode(keycode):
+        while set(str(keycode)).intersection("2468"):
+            keycode += 256
+        return map(int,list(str(keycode)))
+    return dict(map(lambda keycode: (chr(keycode), find_alt_keycode(keycode)), range(0,256)))
+
+keycodemap = generate_alt_keycodes()
+def _print_err(text):
+    print(R + '[!] ' + W + text)
+
+@click.command()
+@click.option('--script', default="", help="Input file for conversion", type=click.Path())
+def cli(script):
+    
+    if script == "":
+        _print_err("You must supply an input file for conversion")
+        exit(-1)
+    else:
+        input_file = open(script, 'r')
+
+    output_file = open(script + ".awd", 'w')
+    entries = []
+    f = input_file.readlines()
+    for line in f:
+        if line.startswith("STRING"):
+            for char in " ".join(line.split()[1:]):
+                for i in keycodemap[char]:
+                    entries.append("CHAR " + str(i) + '\n')
+                entries.append("DELAY 10\n")
+        else:
+            entries.append(line)
+
+    for lines in entries:
+        output_file.write(lines)
+
+if __name__ == '__main__':
+    cli()
